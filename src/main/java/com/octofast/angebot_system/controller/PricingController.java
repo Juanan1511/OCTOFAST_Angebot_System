@@ -23,4 +23,9 @@ public class PricingController {
     public Pricing create(@RequestBody Pricing pricing) {
         return pricingRepository.save(pricing);
     }
+
+    @GetMapping("/costumer/{id}")
+    public List<Pricing> getByCostumer(@PathVariable int id) {
+        return pricingRepository.findByClient_Id(id);
+    }
 }
