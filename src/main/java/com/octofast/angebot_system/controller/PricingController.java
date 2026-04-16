@@ -21,11 +21,17 @@ public class PricingController {
 
     @PostMapping
     public Pricing create(@RequestBody Pricing pricing) {
+        pricing.calculateTotalPrice();
         return pricingRepository.save(pricing);
     }
 
     @GetMapping("/costumer/{id}")
     public List<Pricing> getByCostumer(@PathVariable int id) {
         return pricingRepository.findByClient_Id(id);
+    }
+
+    @GetMapping("/factor/{id}")
+    public List<Pricing> getByFactor(@PathVariable int id) {
+        return pricingRepository.findByFactor_Id(id);
     }
 }

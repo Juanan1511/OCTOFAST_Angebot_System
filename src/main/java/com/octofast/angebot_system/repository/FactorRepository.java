@@ -1,14 +1,10 @@
 package com.octofast.angebot_system.repository;
 
-import com.octofast.angebot_system.model.Pricing;
+import com.octofast.angebot_system.model.Factor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface PricingRepository extends JpaRepository<Pricing, Long> {
+public interface FactorRepository extends JpaRepository<Factor, Long> {
     // This interface contains already methods such as sve(), load(), findAll(), delete() and others.
-    List<Pricing> findByClient_Id(long CostumerId);
-    List<Pricing> findByFactor_Id(long FactorId);
 }

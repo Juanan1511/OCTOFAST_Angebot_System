@@ -17,8 +17,12 @@ public class Pricing {
     @JoinColumn(name = "clientid", nullable = false)
     private Costumer client;
 
+    @ManyToOne
+    @JoinColumn(name = "factorid", nullable = false)
+    private Factor factor;
 
-    @OneToMany(mappedBy = "pricing", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "pricing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PricingProduct> products;
 
     private String description;
@@ -30,5 +34,16 @@ public class Pricing {
     @PrePersist
     protected void onCreate(){
         createdAt = LocalDateTime.now();
+    }
+
+    public void calculateTotalPrice(){
+        if(this.products == null || this.products.isEmpty()){
+            this.price = 0.0;
+            return;
+        }
+        Double baseCost = products.stream()
+                .mapToDouble(product -> product.getProduct().getPrice() * product.getQuantity())
+                .sum();
+        this.price = baseCost * this.factor.getMultiplier();
     }
 }
