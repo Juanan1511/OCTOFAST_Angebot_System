@@ -24,4 +24,11 @@ public class PricingProduct {
     private Product product;
 
     private Integer quantity;
+
+    public void calculateStock(PhysicalProduct pp) {
+        if (pp.getStock() < this.quantity) {
+            throw new RuntimeException("Insufficient Stock for Product:" + pp.getName());
+        }
+        pp.setStock(pp.getStock() - this.quantity);
+    }
 }

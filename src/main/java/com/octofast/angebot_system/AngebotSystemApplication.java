@@ -3,10 +3,13 @@ package com.octofast.angebot_system;
 
 import com.octofast.angebot_system.model.*;
 import com.octofast.angebot_system.repository.*;
+import com.octofast.angebot_system.service.PricingService;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
@@ -19,60 +22,87 @@ public class AngebotSystemApplication {
         SpringApplication.run(AngebotSystemApplication.class, args);
     }
 
-/*
+
     @Bean
-    CommandLineRunner init(FactorRepository factorRepository, CostumerRepository costumerRepository, PricingRepository pricingRepository,
-                           ProductRepository productRepository, PricingProductRepository pricingProductRepository) {
+    @Transactional // Ensures all database changes are committed as a single unit
+    CommandLineRunner init(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, FactorRepository factorRepository, CostumerRepository costumerRepository, PricingRepository pricingRepository,
+                           ProductRepository productRepository, PricingService pricingService) {
         return args -> {
-            Product producta = new Product();
-            producta.setName("Product A");
-            producta.setPrice(20.0);
-            productRepository.save(producta);
+            if (userRepository.findByUsername("admin") == null) {
+                User admin = new User();
+                admin.setUsername("admin");
 
-            Product productb = new Product();
-            productb.setName("Product B");
-            productb.setPrice(30.0);
-            productRepository.save(productb);
+                String password = "admin123";
+                admin.setPassword(passwordEncoder.encode(password));
 
-            Costumer costumer = new Costumer();
-            costumer.setName("Costumer A");
-            costumer.setLastname("Lastname");
-            costumer.setEmail("email@email.com");
-            costumer.setPhone("123456789");
-            costumer.setAddress("Address");
-            Costumer savedCostumer = costumerRepository.save(costumer);
+                admin.setRole("ADMIN");
+                userRepository.save(admin);
 
-            Factor factor = new Factor();
-            factor.setName("Factor A");
-            factor.setMultiplier(2.0);
-            factorRepository.save(factor);
+                System.out.println("--- Seguridad Inicializada ---");
+                System.out.println("Usuario 'admin' creado con éxito.");
+            }
 
-            Pricing p = new Pricing();
-            p.setClient(savedCostumer);
-            p.setDescription("Pricing with two products");
-            p.setFactor(factor);
+            if (productRepository.findAll().isEmpty()) {
+                PhysicalProduct bolt = new PhysicalProduct();
+                bolt.setName("Hex Bolt M8");
+                bolt.setPrice(1.20);
+                bolt.setStock(500);
+                productRepository.save(bolt);
 
+                CustomProduct desk = new CustomProduct();
+                desk.setName("Custom Oak Desk");
+                desk.setPrice(1200.0);
+                desk.setFabricationDetails("Solid oak, 180x80cm, natural finish");
+                productRepository.save(desk);
 
 
-            PricingProduct pricingProduct1 = new PricingProduct();
-            pricingProduct1.setPricing(p);
-            pricingProduct1.setProduct(producta);
-            pricingProduct1.setQuantity(1);
-
-            PricingProduct pricingProduct2 = new PricingProduct();
-            pricingProduct2.setPricing(p);
-            pricingProduct2.setProduct(productb);
-            pricingProduct2.setQuantity(1);
-
-            p.setProducts(List.of(pricingProduct1, pricingProduct2));
-            p.calculateTotalPrice();
-            pricingRepository.save(p);
+                Pricing offer = new Pricing();
+                offer.setDescription("Office Furniture Quote");
 
 
-            System.out.println("¡Primera cotización guardada en SQLite!");
+                Costumer costumer = new Costumer();
+                costumer.setName("Costumer A");
+                costumer.setLastname("Lastname");
+                costumer.setEmail("email@email.com");
+                costumer.setPhone("123456789");
+                costumer.setAddress("Address");
+                Costumer savedCostumer = costumerRepository.save(costumer);
+
+                offer.setClient(savedCostumer);
+
+                Factor factor = new Factor();
+                factor.setName("Factor A");
+                factor.setMultiplier(2.0);
+                Factor savedFactor = factorRepository.save(factor);
+
+                offer.setFactor(savedFactor);
+
+
+                PricingProduct item1 = new PricingProduct();
+                item1.setPricing(offer);
+                item1.setProduct(bolt);
+                item1.setQuantity(50);
+
+                PricingProduct item2 = new PricingProduct();
+                item2.setPricing(offer);
+                item2.setProduct(desk);
+                item2.setQuantity(1);
+
+                offer.setProducts(List.of(item1, item2));
+
+                pricingService.savePricing(offer);
+
+                // Thanks to @Transactional, 'bolt' is updated in SQLite automatically
+                // with 450 units without calling productRepository.save(bolt) again.
+
+
+                System.out.println("¡First pricing saved in SQLite!");
+            }
+
         };
     }
 
- */
+
+
 
 }

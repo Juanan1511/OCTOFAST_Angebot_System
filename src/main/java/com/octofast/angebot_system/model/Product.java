@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Crea una sola tabla "product"
+@DiscriminatorColumn(name = "product_type")
 @Data
 public class Product {
     @Id
@@ -14,5 +16,7 @@ public class Product {
     private String description;
     @Column(nullable = false)
     private Double price;
+
+
 
 }

@@ -33,6 +33,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     runtimeOnly 'org.xerial:sqlite-jdbc:3.45.1.0'
     implementation 'org.hibernate.orm:hibernate-community-dialects'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
