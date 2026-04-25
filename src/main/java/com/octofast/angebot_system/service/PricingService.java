@@ -22,6 +22,16 @@ public class PricingService {
     @Transactional
     public Pricing savePricing(Pricing pricing) {
         for (PricingProduct pp : pricing.getProducts()) {
+            pp.setPrice(pp.getProduct().getPrice());
+            pp.setPricing(pricing);
+
+
+
+            if (pricing.getId() != 0) {
+                pp.getId().setPricingId(pricing.getId());
+            }
+            pp.getId().setProductId(pp.getProduct().getId());
+
             if (pp.getProduct() instanceof PhysicalProduct physical) {
                 pp.calculateStock(physical);
                 productRepository.save(physical);

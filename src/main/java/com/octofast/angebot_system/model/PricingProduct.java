@@ -24,6 +24,7 @@ public class PricingProduct {
     private Product product;
 
     private Integer quantity;
+    private Double price;
 
     public void calculateStock(PhysicalProduct pp) {
         if (pp.getStock() < this.quantity) {

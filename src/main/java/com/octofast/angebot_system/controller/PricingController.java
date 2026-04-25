@@ -2,7 +2,9 @@ package com.octofast.angebot_system.controller;
 
 import com.octofast.angebot_system.model.Pricing;
 import com.octofast.angebot_system.repository.PricingRepository;
+import com.octofast.angebot_system.service.PricingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +14,14 @@ import java.util.List;
 public class PricingController {
 
     @Autowired
-    private PricingRepository pricingRepository;
+    private final PricingService pricingService;
+    @Autowired
+    private final PricingRepository pricingRepository;
+
+    public PricingController(PricingService pricingService, PricingRepository pricingRepository) {
+        this.pricingService = pricingService;
+        this.pricingRepository = pricingRepository;
+    }
 
     @GetMapping
     public List<Pricing> getAll(){
@@ -20,10 +29,11 @@ public class PricingController {
     }
 
     @PostMapping
-    public Pricing create(@RequestBody Pricing pricing) {
-        pricing.calculateTotalPrice();
-        return pricingRepository.save(pricing);
+    public ResponseEntity<Pricing> create(@RequestBody Pricing pricing) {
+        Pricing savedPricing = pricingService.savePricing(pricing);
+        return ResponseEntity.ok(savedPricing);
     }
+
 
     @GetMapping("/costumer/{id}")
     public List<Pricing> getByCostumer(@PathVariable int id) {

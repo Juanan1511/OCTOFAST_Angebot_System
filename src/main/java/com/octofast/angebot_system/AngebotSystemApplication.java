@@ -97,6 +97,31 @@ public class AngebotSystemApplication {
 
 
                 System.out.println("¡First pricing saved in SQLite!");
+
+                try {
+                    System.out.println("Intentando vender 1000 pernos (Stock actual: 500)...");
+
+                    Pricing excessiveOffer = new Pricing();
+                    excessiveOffer.setClient(savedCostumer);
+                    excessiveOffer.setFactor(savedFactor);
+                    excessiveOffer.setDescription("Prueba de Error de Stock");
+
+                    PricingProduct tooManyBolts = new PricingProduct();
+                    tooManyBolts.setPricing(excessiveOffer);
+                    tooManyBolts.setProduct(bolt); // Bolt tiene 500 de stock
+                    tooManyBolts.setQuantity(1000); // Esto debe fallar
+
+                    excessiveOffer.setProducts(List.of(tooManyBolts));
+
+                    // Usamos el SERVICE para procesar la venta
+                    pricingService.savePricing(excessiveOffer);
+
+                } catch (RuntimeException e) {
+                    System.err.println("CAPTURA EXITOSA EN INIT: " + e.getMessage());
+                    // Aquí verás: "Insufficient Stock for Product: Hex Bolt M8"
+                }
+                PhysicalProduct verifyBolt = (PhysicalProduct) productRepository.findById(bolt.getId()).get();
+                System.out.println("Stock final verificado: " + verifyBolt.getStock());
             }
 
         };

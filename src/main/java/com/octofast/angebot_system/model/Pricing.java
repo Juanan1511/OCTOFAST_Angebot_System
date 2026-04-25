@@ -42,7 +42,7 @@ public class Pricing {
             return;
         }
         Double baseCost = products.stream()
-                .mapToDouble(product -> product.getProduct().getPrice() * product.getQuantity())
+                .mapToDouble(pp -> pp.getPrice() * pp.getQuantity())
                 .sum();
         this.price = baseCost * this.factor.getMultiplier();
     }
